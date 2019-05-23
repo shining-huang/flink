@@ -18,12 +18,20 @@
 package org.apache.flink.streaming.examples.wordcount;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.runtime.minicluster.MiniCluster;
+import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
+import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09;
 import org.apache.flink.streaming.examples.wordcount.util.WordCountData;
 import org.apache.flink.util.Collector;
+
+import java.util.Properties;
 
 /**
  * Implements the "WordCount" program that computes a simple word occurrence
@@ -59,6 +67,8 @@ public class WordCount {
 		// make parameters available in the web interface
 		env.getConfig().setGlobalJobParameters(params);
 
+		env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
+
 		// get input data
 		DataStream<String> text;
 		if (params.has("input")) {
@@ -68,7 +78,11 @@ public class WordCount {
 			System.out.println("Executing WordCount example with default input data set.");
 			System.out.println("Use --input to specify file input.");
 			// get default test text data
-			text = env.fromElements(WordCountData.WORDS);
+//			text = env.fromElements(WordCountData.WORDS);
+			Properties pro = new Properties();
+			pro.setProperty("bootstrap.servers", "localhost:9092");
+			pro.setProperty("group.id", "wordcount");
+			text = env.addSource(new FlinkKafkaConsumer010<String>("hyl", new SimpleStringSchema(), pro));
 		}
 
 		DataStream<Tuple2<String, Integer>> counts =

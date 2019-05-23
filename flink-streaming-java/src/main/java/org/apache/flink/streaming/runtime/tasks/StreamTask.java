@@ -1053,6 +1053,7 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
 
 			try {
 				for (StreamOperator<?> op : allOperators) {
+					//调用StreamOperator进行snapshotState的入口方法
 					checkpointStreamOperator(op);
 				}
 
@@ -1074,6 +1075,7 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>>
 					startAsyncPartNano);
 
 				owner.cancelables.registerCloseable(asyncCheckpointRunnable);
+				//这里注册了一个Runnable，在执行完checkpoint之后向JobManager发出CompletedCheckPoint消息，这也是fault tolerant两阶段提交的一部分
 				owner.asyncOperationsThreadPool.submit(asyncCheckpointRunnable);
 
 				if (LOG.isDebugEnabled()) {

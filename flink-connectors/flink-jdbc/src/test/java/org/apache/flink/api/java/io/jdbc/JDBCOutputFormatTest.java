@@ -97,12 +97,13 @@ public class JDBCOutputFormatTest extends JDBCTestBase {
 				.finish();
 		jdbcOutputFormat.open(0, 1);
 
-		Row row = new Row(5);
+		Row row = new Row(6);
 		row.setField(0, 4);
 		row.setField(1, "hello");
 		row.setField(2, "world");
 		row.setField(3, 0.99);
 		row.setField(4, "imthewrongtype");
+		row.setField(5, "hyl");
 
 		jdbcOutputFormat.writeRecord(row);
 		jdbcOutputFormat.close();
@@ -133,7 +134,7 @@ public class JDBCOutputFormatTest extends JDBCTestBase {
 		jdbcOutputFormat.writeRecord(row);
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = Exception.class)
 	public void testExceptionOnClose() throws IOException {
 
 		jdbcOutputFormat = JDBCOutputFormat.buildJDBCOutputFormat()

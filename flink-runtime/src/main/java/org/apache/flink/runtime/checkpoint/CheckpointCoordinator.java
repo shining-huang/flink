@@ -545,6 +545,7 @@ public class CheckpointCoordinator {
 			}
 
 			// schedule the timer that will clean up the expired checkpoints
+			//清理超时的checkpoint的资源
 			final Runnable canceller = () -> {
 				synchronized (lock) {
 					// only do the work if the checkpoint is not discarded anyways
@@ -1045,6 +1046,7 @@ public class CheckpointCoordinator {
 			}
 
 			LOG.info("Restoring job {} from latest valid checkpoint: {}.", job, latest);
+			System.out.println("Restoring job  from latest valid checkpoint: "+latest);
 
 			// re-assign the task states
 			final Map<OperatorID, OperatorState> operatorStates = latest.getOperatorStates();

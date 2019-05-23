@@ -1167,6 +1167,8 @@ public class Task implements Runnable, TaskActions, CheckpointListener {
 					FileSystemSafetyNet.setSafetyNetCloseableRegistryForThread(safetyNetCloseableRegistry);
 
 					try {
+						//invokable事实上就是我们的StreamTask了。
+						// Task类实际上是将checkpoint委托给了更具体的类去执行，而StreamTask也将委托给更具体的类，直到业务代码
 						boolean success = invokable.triggerCheckpoint(checkpointMetaData, checkpointOptions);
 						if (!success) {
 							checkpointResponder.declineCheckpoint(
